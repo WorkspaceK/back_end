@@ -56,16 +56,6 @@ class PersonRepository
         ];
     }
 
-    public function search($request)
-    {
-        $data = $this->personModel;
-        if (!empty($request['last_name']))
-        {
-            $data = $data->whereRaw('LOWER(last_name) like ?', ['%' . strtolower($request['last_name']) . '%']);
-        }
-        return $data->get();
-    }
-
     public function getByBaseIdentification($baseCode)
     {
         return $this->personModel->whereRaw('LOWER(identification) like ?', ['%' . strtolower($baseCode) . '%'])->get();
@@ -96,7 +86,7 @@ class PersonRepository
         return $this->personModel->where('id', $id)->first();
     }
 
-    public function findByIds($ids)
+    public function findByIds(array $ids)
     {
         return $this->personModel->whereIn('id', $ids)->get();
     }
@@ -139,7 +129,7 @@ class PersonRepository
         return $this->personModel->destroy($id);
     }
 
-    public function deleteMultiple(array $ids)
+    public function mass_delete(array $ids)
     {
         return $this->personModel->whereIn('id', $ids)->delete();
     }

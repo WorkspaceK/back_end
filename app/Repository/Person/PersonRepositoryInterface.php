@@ -10,7 +10,7 @@ interface PersonRepositoryInterface
 
     public function search($request);
 
-    public function findByIds($ids);
+    public function findByIds(array $ids);
 
     public function findByCodes($request);
 

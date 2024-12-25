@@ -37,13 +37,117 @@ class PersonController extends Controller
         }
     }
 
-    public function search(PersonRequest $request)
+    public function store(PersonRequest $request)
     {
         try {
-            if (!$search = $this->personService->search($request->all())) return response()->json("Bad request!", 404);
-            return response()->json($search);
+            return $this->personService->store($request->all());
         } catch (\Exception $e) {
             return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+
+    }
+
+    public function get_by_id($id)
+    {
+        try {
+            if (!$person = $this->personService->find($id)) return response()->json("Bad request!", 404);
+            return response()->json($person);
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function update($id, PersonRequest $request)
+    {
+        try {
+            if (!$this->personService->update($id, $request->all())) return response()->json("Bad request!", 404);
+            return response()->json(['message' => 'Update success']);
+        } catch (\Exception $e){
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            if(!$this->personService->delete($id)) return response()->json("Bad request!", 404);
+            return response()->json(['message' => 'Deleted successfully.']);
+        } catch (\Exception $e){
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function mass_delete(PersonRequest $request)
+    {
+        try {
+            if(!$this->personService->mass_delete($request->all())) {
+                return response()->json(['message' => 'Deleted failed'], 404);
+            }
+            return response()->json(['message' => 'Deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function copy($id)
+    {
+        try {
+            if (!$record = $this->personService->copy($id)) return response()->json("Bad request!", 404);
+            return response()->json($record);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function mass_copy(PersonRequest $request)
+    {
+        try {
+            if (!$record = $this->personService->mass_copy($request->all())) return response()->json("Bad request!", 404);
+            return response()->json($record);
+
+//            if(!$this->personService->mass_delete($request->all())) {
+//                return response()->json(['message' => 'Deleted failed'], 404);
+//            }
+//            return response()->json(['message' => 'Deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function import_data(PersonRequest $request)
+    {
+        try{
+            $request->validate([
+                'file' => 'required|mimes:xlsx,csv',
+            ]);
+            if (!$import = Excel::import(new ClassesImport, $request->file('file'))) return response()->json("Bad request!", 404);
+            return response()->json(['data'=>'Users imported successfully.', $import]);
+        }catch(\Exception $e){
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function export_by_id(ExportRequest $request)
+    {
+        return $this->personService->exportItemsToCsv($request->all());
+    }
+
+    public function exportXlsx(ExportRequest $request)
+    {
+        try {
+            return $this->personService->exportItemsToXlsx($request->all());
+        } catch (\Exception $e) {
+            return response()->json(500);
+        }
+    }
+
+    public function get_by_ids(PersonRequest $request)
+    {
+        try {
+            return $this->personService->getListById($request->all());
+        } catch (\Exception $e) {
+            return response()->json(500);
         }
     }
 
@@ -112,38 +216,6 @@ class PersonController extends Controller
         }
     }
 
-    public function show($id)
-    {
-        try {
-            if (!$person = $this->personService->find($id)) return response()->json("Bad request!", 404);
-            return response()->json($person);
-        }
-        catch (\Exception $e) {
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function store(PersonRequest $request)
-    {
-        try {
-            return $this->personService->store($request->all());
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-
-    }
-
-    public function update($id, PersonRequest $request)
-    {
-        try {
-            if (!$this->personService->update($id, $request->all())) return response()->json("Bad request!", 404);
-            return response()->json(['message' => 'Update success']);
-//            return response()->json($d)
-        } catch (\Exception $e){
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
     public function updateStatus($id, PersonRequest $request)
     {
         try {
@@ -151,75 +223,6 @@ class PersonController extends Controller
             return response()->json(['message' => 'Update success']);
         } catch (\Exception $e){
             return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function destroy($id)
-    {
-        try {
-            if(!$this->personService->delete($id)) return response()->json("Bad request!", 404);
-            return response()->json(['message' => 'Deleted successfully.']);
-        } catch (\Exception $e){
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function deleteMultiple(PersonRequest $request)
-    {
-        try {
-            if(!$data = $this->personService->deleteMultiple($request->all())) {
-                return response()->json(['message' => 'Deleted failed'], 404);
-            }
-            return response()->json(['message' => 'Deleted successfully.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function record($id)
-    {
-        try {
-            if (!$record = $this->personService->record($id)) return response()->json("Bad request!", 404);
-            return response()->json($record);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function recordMultiple(PersonRequest $request)
-    {
-        try {
-            if (!$record = $this->personService->recordMulti($request->all())) return response()->json("Bad request!", 404);
-            return response()->json($record);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function importExcelData(PersonRequest $request)
-    {
-        try{
-            $request->validate([
-                'file' => 'required|mimes:xlsx,csv',
-            ]);
-            if (!$import = Excel::import(new ClassesImport, $request->file('file'))) return response()->json("Bad request!", 404);
-            return response()->json(['data'=>'Users imported successfully.', $import]);
-        }catch(\Exception $e){
-            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function exportCsv(ExportRequest $request)
-    {
-        return $this->personService->exportItemsToCsv($request->all());
-    }
-
-    public function exportXlsx(ExportRequest $request)
-    {
-        try {
-            return $this->personService->exportItemsToXlsx($request->all());
-        } catch (\Exception $e) {
-            return response()->json(500);
         }
     }
 

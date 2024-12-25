@@ -21,12 +21,8 @@ class PersonService
 
     public function get_by_page($request)
     {
-        return $this->personRepository->get_by_page($request);
-    }
-
-    public function search($dataSearch)
-    {
-        return $this->personRepository->search($dataSearch);
+        $data = $this->personRepository->get_by_page($request);
+        return $data;
     }
 
     public function getListById($ids)
@@ -126,12 +122,12 @@ class PersonService
         return $this->personRepository->delete($id);
     }
 
-    public function deleteMultiple(array $ids)
+    public function mass_delete(array $ids)
     {
-        return $this->personRepository->deleteMultiple($ids);
+        return $this->personRepository->mass_delete($ids);
     }
 
-    public function record($id)
+    public function copy($id)
     {
         if(!$person = $this->personRepository->find($id)) return abort(404);
 
@@ -164,32 +160,74 @@ class PersonService
         return $newClass;
     }
 
-    public function recordMulti($ids)
+    public function mass_copy(array $ids)
     {
-        $data = [];
+//        $data = [];
+//        foreach ($ids as $id) {
+//            if (!$person = $this->personRepository->find($id)) return abort(404);
+//            $baseIdentification = preg_replace('/\(\d+\)$/', '', $person->code);
+//            $baseIdentification = preg_replace('/-copy/', '', $baseIdentification);
+//            $existingPersons = $this->personRepository->getByBaseIdentification($baseIdentification);
+//            $highestNumber = 0;
+//            foreach ($existingPersons as $existingClass) {
+//                preg_match('/\((\d+)\)$/', $existingClass->code, $matches);
+//                if (!empty($matches[1])) {
+//                    $highestNumber = max($highestNumber, (int)$matches[1]);
+//                }
+//            }
+//            $newIdentification = $baseIdentification . '-copy(' . ($highestNumber + 1) . ')';
+//            $person->code = $newIdentification;
+//
+//            // Chỉnh sửa email
+//            $baseEmail = preg_replace('/\(\d+\)$/', '', $person->name);
+//            $baseEmail = preg_replace('/-copy/', '', $baseEmail);
+//            $newEmail = $baseEmail . '-copy(' . ($highestNumber + 1) . ')';
+//            $person->email = $newEmail;
+//
+//            // Kết thúc: tạo bản sao và lu
+//            $newClass = $person->replicate();
+//            $newClass->save();
+//            $data[] = $newClass;
+//        }
+//        return $data;
+
+        $newPersons = []; // Mảng lưu trữ các bản sao mới
+
         foreach ($ids as $id) {
-            if (!$person = $this->personRepository->find($id)) return abort(404);
-            $baseIdentification = preg_replace('/\(\d+\)$/', '', $person->code);
-            $baseIdentification = preg_replace('/-copy/', '', $baseIdentification);
-            $existingPersons = $this->personRepository->getByBaseIdentification($baseIdentification);
+            if (!$person = $this->personRepository->find($id)) {
+                abort(404, "Person with ID $id not found.");
+            }
+
+            // Chỉnh sửa identification
+            $baseCode = preg_replace('/\(\d+\)$/', '', $person->identification);
+            $baseCode = preg_replace('/-copy/', '', $baseCode);
+            $existingPersons = $this->personRepository->getByBaseIdentification($baseCode);
+
             $highestNumber = 0;
-            foreach ($existingPersons as $existingClass) {
-                preg_match('/\((\d+)\)$/', $existingClass->code, $matches);
+            foreach ($existingPersons as $existingPerson) {
+                preg_match('/\((\d+)\)$/', $existingPerson->identification, $matches);
                 if (!empty($matches[1])) {
                     $highestNumber = max($highestNumber, (int)$matches[1]);
                 }
             }
-            $newIdentification = $baseIdentification . '-copy(' . ($highestNumber + 1) . ')';
-            $person->code = $newIdentification;
-            $baseEmail = preg_replace('/\(\d+\)$/', '', $person->name);
+
+            $newCode = $baseCode . '-copy(' . ($highestNumber + 1) . ')';
+            $person->identification = $newCode;
+
+            // Chỉnh sửa email
+            $baseEmail = preg_replace('/\(\d+\)$/', '', $person->email);
             $baseEmail = preg_replace('/-copy/', '', $baseEmail);
             $newEmail = $baseEmail . '-copy(' . ($highestNumber + 1) . ')';
             $person->email = $newEmail;
+
+            // Kết thúc: Tạo bản sao và lưu
             $newClass = $person->replicate();
             $newClass->save();
-            $data[] = $newClass;
+
+            $newPersons[] = $newClass; // Thêm bản sao mới vào mảng
         }
-        return $data;
+
+        return $newPersons; // Trả về danh sách bản sao mới
     }
 
 //    public function exportItemsToCsv($ids)
