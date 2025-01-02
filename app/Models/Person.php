@@ -13,7 +13,7 @@ class Person extends Model
 
     protected $fillable = ['id', 'firstName', 'lastName'];
 
-    public function Publications()
+    public function publications()
     {
         return $this->hasMany('App\Models\Publication', 'main_person_id', 'id');
     }

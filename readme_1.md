@@ -18,8 +18,11 @@
    php artisan make:seeder NameSeeder
    php artisan db:seed
    php artisan db:seed --class=UserTableSeeder
-5. Create controller: php artisan module:make-controller NameController name_module
-6. Create middleware: php artisan make:middleware adminAuthenticate
+5. Create controller: 
+   - php artisan module:make-controller NameController name_module
+   - php artisan make:controller NameController
+6. Create request: php artisan module:make-request NameRequest name_module
+7. Create middleware: php artisan make:middleware adminAuthenticate
 7. Create model
    php artisan make:model Admin
 8. php artisan make:provider RiakServiceProvider

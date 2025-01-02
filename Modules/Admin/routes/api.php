@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\Admin\App\Http\Controllers\DegreeController;
 use Modules\Admin\App\Http\Controllers\PersonController;
 use Modules\Admin\App\Http\Controllers\PublicationController;
 /*
@@ -20,6 +21,27 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->name('api.')->group(function 
 });
 
 Route::prefix('admins')->group(function () {
+    Route::prefix('degrees')->group(function () {
+        Route::get('/getAll', [DegreeController::class, 'getAll']);
+        Route::get('/', [DegreeController::class, 'getByPage']);
+        Route::post('/', [DegreeController::class, 'store']);
+        Route::get('/{id}', [DegreeController::class, 'getById']);
+        Route::patch('/{id}', [DegreeController::class, 'update']);
+
+        Route::delete('/{id}', [DegreeController::class, 'destroy']);
+        Route::post('/delete', [DegreeController::class, 'massDelete']);
+
+        Route::post('/{id}/copy', [DegreeController::class, 'copy']);
+        Route::post('/copy', [DegreeController::class, 'massCopy']);
+
+        Route::post('/import', [DegreeController::class, 'importData']);
+
+        Route::get('{id}/export', [DegreeController::class, 'exportById']);
+        Route::get('/export', [DegreeController::class, 'massExport']);
+
+        Route::get('/getByIds', [DegreeController::class, 'getByIds']);
+    });
+
     Route::prefix('persons')->group(function () {
         Route::get('/', [PersonController::class, 'index']);
         Route::get('/', [PersonController::class, 'get_by_page']);

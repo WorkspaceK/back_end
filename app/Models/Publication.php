@@ -9,7 +9,7 @@ class Publication extends Model
 {
     use HasFactory;
 
-    public function Persons()
+    public function person()
     {
         return $this->belongsTo('App\Models\Publication', 'main_person_id', 'id');
     }
