@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('publications', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 500);
+            $table->string('name', 500)->unique();
             $table->string('description')->nullable();
-            $table->string('organization_name', 500);
-            $table->string('ISSN', 100);
+            $table->string('organization_name', 500)->unique();
+            $table->string('ISSN', 100)->unique();
             $table->string('cover_image', 500)->nullable();
             $table->integer('published_year')->nullable();
             $table->string('full_text')->nullable();
 
-            $table->unsignedBigInteger('publication_type_id');
+            $table->unsignedBigInteger('publication_type_id')->unique();
             $table->unsignedBigInteger('status_id')->nullable();
             $table->unsignedBigInteger('person_id')->nullable();
 

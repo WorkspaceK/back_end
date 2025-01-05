@@ -40,6 +40,10 @@ Route::prefix('admins')->group(function () {
         Route::get('/export', [DegreeController::class, 'massExport']);
 
         Route::get('/getByIds', [DegreeController::class, 'getByIds']);
+        Route::patch('/{id}/update-status', [DegreeController::class, 'updateStatus']);
+
+        Route::get('/{code}/has-by-code', [DegreeController::class, 'hasByCode']);
+        Route::get('/{name}/has-by-name', [DegreeController::class, 'hasByName']);
     });
 
     Route::prefix('persons')->group(function () {

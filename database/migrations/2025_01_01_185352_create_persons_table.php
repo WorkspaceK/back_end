@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('persons', function (Blueprint $table) {
             $table->id();
-            $table->string('identification',50);
+            $table->string('identification',50)->unique();
             $table->string('first_name', 50)->nullable();
             $table->string('last_name', 50)->nullable();
             $table->string('email', 100)->nullable();
             $table->string('phone_number', 20)->nullable();
             $table->string('avatar', 500)->nullable();
 
-            $table->unsignedBigInteger('degree_id');
+            $table->unsignedBigInteger('degree_id')->unique();
             $table->unsignedBigInteger('academic_rank_id')->nullable();
 
             $table->foreign('degree_id')->references('id')->on('degrees');

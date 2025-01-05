@@ -14,6 +14,15 @@
    php artisan make:migration add_avatar_to_admin_table --table=admins
    factor
    php artisan make:factory PostFactory
+------
+    Để khôi phục lại lần thực hiện migration gần nhất, Bạn sử dụng lệnh rollback. Lệnh này sẽ quay lại "batch" migrations cuối cùng,
+    $ php artisan migrate:rollback
+    
+    Bạn có thể giới hạn số lượng migrations rollback bằng cách sử dụng tùy chọn step. Ví dụ
+    $ php artisan migrate:rollback --step=5
+    
+    Lệnh migrate:reset sẽ rolllback lại tất cả các migrations
+    $ php artisan migrate:reset
 4. Create seeder
    php artisan make:seeder NameSeeder
    php artisan db:seed

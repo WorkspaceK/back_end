@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->float('norm')->nullable();
 
-            $table->unsignedBigInteger('publication_id');
-            $table->unsignedBigInteger('person_id');
-            $table->unsignedBigInteger('author_role_id');
+            $table->unsignedBigInteger('publication_id')->unique();
+            $table->unsignedBigInteger('person_id')->unique();
+            $table->unsignedBigInteger('author_role_id')->unique();
 
             $table->foreign('publication_id')->references('id')->on('publications');
             $table->foreign('person_id')->references('id')->on('persons');

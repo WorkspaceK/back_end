@@ -12,7 +12,9 @@ class DegreeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'code' => 'required|string|max:50|unique:degrees,code,' . ($this->id ?? 'NULL'),
+            'name' => 'required|string|max:100|unique:degrees,name,' . ($this->id ?? 'NULL'),
+            'is_default' => 'boolean',
         ];
     }
 

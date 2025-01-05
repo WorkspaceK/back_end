@@ -58,9 +58,14 @@ class DegreeRepository
 
     }
 
-    public function getByBaseCode($baseCode)
+    public function getByBaseCode($data)
     {
-        return $this->degreeModel->whereRaw('LOWER(code) like ?', ['%' . strtolower($baseCode) . '%'])->get();
+        return $this->degreeModel->whereRaw('LOWER(code) like ?', ['%' . strtolower($data) . '%'])->get();
+    }
+
+    public function getByBaseName($data)
+    {
+        return $this->degreeModel->whereRaw('LOWER(name) like ?', ['%' . strtolower($data) . '%'])->get();
     }
 
     public function store($data)
@@ -83,5 +88,15 @@ class DegreeRepository
     public function massDelete(array $ids)
     {
         return $this->degreeModel->whereIn('id', $ids)->delete();
+    }
+
+    public function hasByCode($data)
+    {
+        return$this->degreeModel->where('code', $data)->exists();
+    }
+
+    public function hasByName($data)
+    {
+        return$this->degreeModel->where('name', $data)->exists();
     }
 }

@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 500);
+            $table->string('name', 500)->unique();
             $table->text('description')->nullable();
             $table->integer('member_no')->default(1);
             $table->integer('rank')->default(1)->between(1, 10);
 
-            $table->unsignedBigInteger('employee_id');
-            $table->unsignedBigInteger('research_field_id');
-            $table->unsignedBigInteger('project_type_id')->nullable();
+            $table->unsignedBigInteger('employee_id')->unique();
+            $table->unsignedBigInteger('research_field_id')->unique();
+            $table->unsignedBigInteger('project_type_id')->nullable()->unique();
 
             $table->foreign('employee_id')->references('id')->on('employees');
             $table->foreign('research_field_id')->references('id')->on('research_fields');

@@ -44,10 +44,13 @@ class DegreeService
         $dataStore = [
             'code' => $data['code'],
             'name' => $data['name'],
-            'is_default' => $data['is_default'],
             'created_at' => now(),
             'updated_at' => now(),
         ];
+
+        if (!empty($data['is_default'])) {
+            $dataStore['is_default'] = $data['is_default'];
+        }
         return $this->degreeRepository->store($dataStore);
     }
 
@@ -65,7 +68,7 @@ class DegreeService
 
     public function updateStatus($id, $data)
     {
-        $dataUpdate = [ 'status' => $data['status'], 'updated_at' => now() ];
+        $dataUpdate = [ 'is_default' => $data['is_default'], 'updated_at' => now() ];
         return $this->degreeRepository->update($id, $dataUpdate);
     }
 
@@ -84,13 +87,13 @@ class DegreeService
         if(!$degree = $this->degreeRepository->find($id)) return abort(404);
 
         //edit code
-        $baseCode = preg_replace('/\(\d+\)$/', '', $degree->identification);
+        $baseCode = preg_replace('/\(\d+\)$/', '', $degree->code);
         $baseCode = preg_replace('/-copy/', '', $baseCode);
-        $existingDegrees = $this->degreeRepository->getByBaseCode($baseCode);
+        $existingCodes = $this->degreeRepository->getByBaseCode($baseCode);
 
         $highestNumber = 0;
-        foreach ($existingDegrees as $existingDegree) {
-            preg_match('/\((\d+)\)$/', $existingDegree->code, $matches);
+        foreach ($existingCodes as $existingCode) {
+            preg_match('/\((\d+)\)$/', $existingCode->code, $matches);
             if (!empty($matches[1])) {
                 $highestNumber = max($highestNumber, (int)$matches[1]);
             }
@@ -98,6 +101,22 @@ class DegreeService
 //        dd($highestNumber);
         $newCode = $baseCode . '-copy(' . ($highestNumber + 1) . ')';
         $degree->code = $newCode;
+
+        //edit name
+        $baseName = preg_replace('/\(\d+\)$/', '', $degree->name);
+        $baseName = preg_replace('/-copy/', '', $baseName);
+        $existingNames = $this->degreeRepository->getByBaseName($baseName);
+
+        $highestNumber = 0;
+        foreach ($existingNames as $existingName) {
+            preg_match('/\((\d+)\)$/', $existingName->name, $matches);
+            if (!empty($matches[1])) {
+                $highestNumber = max($highestNumber, (int)$matches[1]);
+            }
+        }
+//        dd($highestNumber);
+        $newName = $baseName . '-copy(' . ($highestNumber + 1) . ')';
+        $degree->name = $newName;
 
         //end
         $newClass = $degree->replicate();
@@ -142,6 +161,16 @@ class DegreeService
         return $newDegrees; // Trả về danh sách bản sao mới
     }
 
+    public function hasByCode($data)
+    {
+        return $this->degreeRepository->hasByCode($data);
+    }
+
+    public function hasByName($data)
+    {
+        return $this->degreeRepository->hasByName($data);
+    }
+
 //    public function exportItemsToCsv($ids)
 //    {
 //        $degrees = $this->degreeRepository->findByIds($ids);
@@ -156,4 +185,6 @@ class DegreeService
 //        }
 //        return Excel::download(new DegreesExport($degrees), 'degrees.xlsx');
 //    }
+
+
 }

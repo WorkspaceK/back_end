@@ -12,7 +12,9 @@ interface DegreeRepositoryInterface
 
     public function findByCodes($request);
 
-    public function getByBaseCode($baseCode);
+    public function getByBaseCode($data);
+
+    public function getByBaseName($data);
 
     public function getPaginate($data);
 
@@ -23,4 +25,9 @@ interface DegreeRepositoryInterface
     public function delete($id);
 
     public function massDelete(array $ids);
+
+    public function hasByCode($data);
+
+    public function hasByName($data);
+
 }

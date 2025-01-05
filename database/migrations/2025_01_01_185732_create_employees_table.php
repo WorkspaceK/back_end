@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 50);
-            $table->unsignedBigInteger('person_id');
-            $table->unsignedBigInteger('department_id');
-            $table->unsignedBigInteger('position_id')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->string('code', 50)->unique();
+            $table->unsignedBigInteger('person_id')->unique();
+            $table->unsignedBigInteger('department_id')->unique();
+            $table->unsignedBigInteger('position_id')->nullable()->unique();
+            $table->boolean('is_active')->default(true)->unique();
 
             $table->foreign('person_id')->references('id')->on('persons');
             $table->foreign('department_id')->references('id')->on('departments');

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('academic_ranks', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 50);
-            $table->string('name', 100)->nullable();
+            $table->string('code', 50)->unique();
+            $table->string('name', 100)->nullable()->unique();
             $table->boolean('is_default')->default(0);
             $table->timestamps();
             $table->softDeletes();
