@@ -42,20 +42,14 @@ class DegreeRepository
         return $this->degreeModel->where('id', $id)->first();
     }
 
-    public function findByIds(array $ids)
+    public function getByIds($ids)
     {
         return $this->degreeModel->whereIn('id', $ids)->get();
     }
 
-    public function findByCodes($request)
+    public function findByCodes(array $codes)
     {
-        $data = $this->degreeModel->whereIn('code', $request['codes']);
-        if (!empty($request['name']))
-        {
-            $data = $data->whereRaw('LOWER(name) like ?', ['%' . strtolower($request['name']) . '%']);
-        }
-        return $data->orderBy($request['field'], $request['sortOrder'])->withCount('students')->paginate($request['pageSize']);
-
+        return $this->degreeModel->whereIn('code', $codes)->get();
     }
 
     public function getByBaseCode($data)
@@ -92,11 +86,16 @@ class DegreeRepository
 
     public function hasByCode($data)
     {
-        return$this->degreeModel->where('code', $data)->exists();
+        return $this->degreeModel->where('code', $data)->exists();
     }
 
     public function hasByName($data)
     {
-        return$this->degreeModel->where('name', $data)->exists();
+        return $this->degreeModel->where('name', $data)->exists();
+    }
+
+    public function import($data)
+    {
+        return $this->degreeModel->get();
     }
 }

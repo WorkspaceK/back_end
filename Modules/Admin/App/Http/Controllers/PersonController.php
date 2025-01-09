@@ -128,12 +128,12 @@ class PersonController extends Controller
         }
     }
 
-    public function export_by_id(ExportRequest $request)
+    public function export_by_id(Request $request)
     {
         return $this->personService->exportItemsToCsv($request->all());
     }
 
-    public function exportXlsx(ExportRequest $request)
+    public function mass_export(Request $request)
     {
         try {
             return $this->personService->exportItemsToXlsx($request->all());

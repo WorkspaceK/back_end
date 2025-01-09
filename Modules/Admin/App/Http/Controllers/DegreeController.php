@@ -2,11 +2,15 @@
 
 namespace Modules\Admin\App\Http\Controllers;
 
+use App\Exports\DegreeExport;
 use App\Http\Controllers\Controller;
+use App\Imports\DegreeImport;
+use App\Models\Degree;
 use App\Services\DegreeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use Modules\Admin\App\Http\Requests\DegreeRequest;
 
 class DegreeController extends Controller
@@ -78,7 +82,7 @@ class DegreeController extends Controller
         }
     }
 
-    public function massDelete(DegreeRequest $request)
+    public function massDelete(Request $request)
     {
         try {
             if(!$this->degreeService->massDelete($request->all())) {
@@ -100,16 +104,11 @@ class DegreeController extends Controller
         }
     }
 
-    public function massCopy(DegreeRequest $request)
+    public function massCopy(Request $request)
     {
         try {
             if (!$record = $this->degreeService->massCopy($request->all())) return response()->json("Bad request!", 404);
             return response()->json($record);
-
-//            if(!$this->degreeService->mass_delete($request->all())) {
-//                return response()->json(['message' => 'Deleted failed'], 404);
-//            }
-//            return response()->json(['message' => 'Deleted successfully.']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
@@ -146,18 +145,29 @@ class DegreeController extends Controller
     }
 
 
-//    public function import_data(DegreeRequest $request)
-//    {
-//        try{
-//            $request->validate([
-//                'file' => 'required|mimes:xlsx,csv',
-//            ]);
-//            if (!$import = Excel::import(new ClassesImport, $request->file('file'))) return response()->json("Bad request!", 404);
-//            return response()->json(['data'=>'Users imported successfully.', $import]);
-//        }catch(\Exception $e){
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
+    public function import(Request $request)
+    {
+        try{
+            $request->validate([
+                'file' => 'required|mimes:xlsx,csv',
+            ]);
+            if(!$result = Excel::import(new DegreeImport,$request->file('file'))) return response()->json("Bad request!", 404);
+            return response()->json(['data'=>'Users imported successfully.', $result]);
+        }catch(\Exception $e){
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function massExport(Request $request)
+    {
+        try {
+            if (!$data = $this->degreeService->getByIds($request->all())) return response()->json("Bad request!", 404);
+            $export = new DegreeExport([$data]);
+            return Excel::download($export, 'Degree.xlsx');
+        } catch (\Exception $e) {
+            return response()->json(500);
+        }
+    }
 
 //    public function export_by_id(ExportRequest $request)
 //    {
@@ -173,10 +183,21 @@ class DegreeController extends Controller
 //        }
 //    }
 
-    public function getByIds(DegreeRequest $request)
+    public function getByIds(Request $request)
     {
         try {
-            return $this->degreeService->getListById($request->all());
+            if (!$res = $this->degreeService->getByIds($request->input('ids'))) return response()->json("Bad request!", 404);
+            return response()->json($res);
+        } catch (\Exception $e) {
+            return response()->json(500);
+        }
+    }
+
+    public function getByCodes(Request $request)
+    {
+        try {
+            if (!$res = $this->degreeService->getListByCodes($request->all())) return response()->json("Bad request!", 404);
+            return response()->json($res);
         } catch (\Exception $e) {
             return response()->json(500);
         }

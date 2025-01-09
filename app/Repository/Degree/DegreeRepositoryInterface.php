@@ -8,9 +8,9 @@ interface DegreeRepositoryInterface
 
     public function find($id);
 
-    public function findByIds(array $ids);
+    public function findByIds($ids);
 
-    public function findByCodes($request);
+    public function findByCodes(array $codes);
 
     public function getByBaseCode($data);
 

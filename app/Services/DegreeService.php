@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repository\Degree\DegreeRepository;
+use Illuminate\Support\Facades\DB;
 
 class DegreeService
 {
@@ -24,9 +25,9 @@ class DegreeService
         return $data;
     }
 
-    public function getListById($ids)
+    public function getByIds($ids)
     {
-        return $this->degreeRepository->findByIds($ids);
+        return $this->degreeRepository->getByIds($ids);
     }
 
     public function getListByCodes($request)
@@ -51,6 +52,10 @@ class DegreeService
         if (!empty($data['is_default'])) {
             $dataStore['is_default'] = $data['is_default'];
         }
+
+        if (!empty($data['description'])) {
+            $dataStore['description'] = $data['description'];
+        }
         return $this->degreeRepository->store($dataStore);
     }
 
@@ -63,6 +68,10 @@ class DegreeService
             'is_default' => $data['is_default'],
             'updated_at' => now(),
         ];
+
+        if (!empty($data['description'])) {
+            $dataUpdate['description'] = $data['description'];
+        }
         return $this->degreeRepository->update($id, $dataUpdate);
     }
 
@@ -127,38 +136,52 @@ class DegreeService
 
     public function massCopy(array $ids)
     {
-
-        $newDegrees = []; // Mảng lưu trữ các bản sao mới
+        $ids = is_array($ids) ? $ids : [$ids]; // Đảm bảo xử lý cả mảng và giá trị đơn
+        $copiedItems = [];
 
         foreach ($ids as $id) {
             if (!$degree = $this->degreeRepository->find($id)) {
-                abort(404, "Degree with ID $id not found.");
+                continue; // Bỏ qua nếu không tìm thấy đối tượng
             }
 
-            // Chỉnh sửa code
+            // Xử lý code
             $baseCode = preg_replace('/\(\d+\)$/', '', $degree->code);
             $baseCode = preg_replace('/-copy/', '', $baseCode);
-            $existingDegrees = $this->degreeRepository->getByBaseCode($baseCode);
+            $existingCodes = $this->degreeRepository->getByBaseCode($baseCode);
 
             $highestNumber = 0;
-            foreach ($existingDegrees as $existingDegree) {
-                preg_match('/\((\d+)\)$/', $existingDegree->code, $matches);
+            foreach ($existingCodes as $existingCode) {
+                preg_match('/\((\d+)\)$/', $existingCode->code, $matches);
                 if (!empty($matches[1])) {
                     $highestNumber = max($highestNumber, (int)$matches[1]);
                 }
             }
-
             $newCode = $baseCode . '-copy(' . ($highestNumber + 1) . ')';
             $degree->code = $newCode;
 
-            // Kết thúc: Tạo bản sao và lưu
+            // Xử lý name
+            $baseName = preg_replace('/\(\d+\)$/', '', $degree->name);
+            $baseName = preg_replace('/-copy/', '', $baseName);
+            $existingNames = $this->degreeRepository->getByBaseName($baseName);
+
+            $highestNumber = 0;
+            foreach ($existingNames as $existingName) {
+                preg_match('/\((\d+)\)$/', $existingName->name, $matches);
+                if (!empty($matches[1])) {
+                    $highestNumber = max($highestNumber, (int)$matches[1]);
+                }
+            }
+            $newName = $baseName . '-copy(' . ($highestNumber + 1) . ')';
+            $degree->name = $newName;
+
+            // Tạo bản sao
             $newClass = $degree->replicate();
             $newClass->save();
 
-            $newDegrees[] = $newClass; // Thêm bản sao mới vào mảng
+            $copiedItems[] = $newClass;
         }
 
-        return $newDegrees; // Trả về danh sách bản sao mới
+        return $copiedItems;  // Trả về danh sách bản sao mới
     }
 
     public function hasByCode($data)
@@ -171,6 +194,21 @@ class DegreeService
         return $this->degreeRepository->hasByName($data);
     }
 
+//    public function import($file)
+//    {
+//        try {
+//            DB::beginTransaction();
+//            $data = Excel::toArray(new DegreeImport, $file)[0];  // Assume first sheet
+//            foreach ($data as $row) {
+//                $this->degreeRepository->import($row['name']);  // Truy vấn và xử lý
+//            }
+//            DB::commit();
+//            return ['success' => true, 'message' => 'File imported successfully'];
+//        } catch (\Exception $e) {
+//            DB::rollBack();
+//            throw new \Exception('Error importing file: ' . $e->getMessage());
+//        }
+//    }
 //    public function exportItemsToCsv($ids)
 //    {
 //        $degrees = $this->degreeRepository->findByIds($ids);
