@@ -37,7 +37,7 @@ Route::prefix('admins')->group(function () {
         Route::post('/import', [DegreeController::class, 'import']);
 
         Route::get('{id}/export', [DegreeController::class, 'exportById']);
-        Route::get('/export', [DegreeController::class, 'massExport']);
+        Route::post('/export', [DegreeController::class, 'massExport']);
 
         Route::get('/get-by-id', [DegreeController::class, 'getByIds']);
         Route::get('/get-by-code', [DegreeController::class, 'getByCodes']);
@@ -45,6 +45,15 @@ Route::prefix('admins')->group(function () {
 
         Route::get('/{code}/has-by-code', [DegreeController::class, 'hasByCode']);
         Route::get('/{name}/has-by-name', [DegreeController::class, 'hasByName']);
+
+        Route::get('/recycle', [DegreeController::class, 'recycle']);
+        Route::get('{id}/show-recycled', [DegreeController::class, 'showRecycled']);
+        Route::post('/{id}/restore', [DegreeController::class, 'restore']);
+        Route::post('/restore-multiple', [DegreeController::class, 'restoreMultiple']);
+        Route::post('/restore-all', [DegreeController::class, 'restoreAll']);
+        Route::delete('{id}/force-delete', [DegreeController::class, 'forceDelete']);
+        Route::delete('force-delete-multiple', [DegreeController::class, 'forceDeleteMultiple']);
+        Route::delete('force-delete-all', [DegreeController::class, 'forceDeleteAll']);
     });
 
     Route::prefix('persons')->group(function () {
@@ -63,7 +72,7 @@ Route::prefix('admins')->group(function () {
         Route::post('/import', [PersonController::class, 'import_data']);
 
         Route::get('{id}/export', [PersonController::class, 'export_by_id']);
-        Route::get('/export', [PersonController::class, 'mass_export']);
+        Route::post('/export', [PersonController::class, 'mass_export']);
 
         Route::get('/get_by_ids', [PersonController::class, 'get_by_ids']);
 

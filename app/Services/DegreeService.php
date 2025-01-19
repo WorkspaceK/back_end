@@ -194,6 +194,51 @@ class DegreeService
         return $this->degreeRepository->hasByName($data);
     }
 
+    //recycle
+    public function onlyTrashed($data)
+    {
+        return $this->degreeRepository->onlyTrashed($data);
+    }
+
+    public function onlyTrashedById($id)
+    {
+        return $this->degreeRepository->onlyTrashedById($id);
+    }
+
+    public function withTrashedById($id)
+    {
+        return $this->degreeRepository->withTrashedById($id);
+    }
+
+    public function restoreById($id)
+    {
+        return $this->degreeRepository->restoreById($id);
+    }
+
+    public function restoreByIds($ids)
+    {
+        return $this->degreeRepository->restoreByIds($ids);
+    }
+
+    public function restoreAll()
+    {
+        return $this->degreeRepository->restoreAll();
+    }
+
+    public function forceDeleteById($id)
+    {
+        return $this->degreeRepository->forceDeleteById($id);
+    }
+
+    public function forceDeleteByIds($ids)
+    {
+        return $this->degreeRepository->forceDeleteByIds($ids);
+    }
+    public function forceDeleteAll()
+    {
+        return $this->degreeRepository->forceDeleteAll();
+    }
+
 //    public function import($file)
 //    {
 //        try {

@@ -17,4 +17,9 @@ class Person extends Model
     {
         return $this->hasMany('App\Models\Publication', 'main_person_id', 'id');
     }
+
+    public function degrees()
+    {
+        return $this->belongsTo('App\Models\Degree', 'degree_id', 'id');
+    }
 }

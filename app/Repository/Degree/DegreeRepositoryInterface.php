@@ -30,4 +30,22 @@ interface DegreeRepositoryInterface
 
     public function hasByName($data);
 
+    //recycle
+    public function onlyTrashed($request);
+    public function onlyTrashedById($id);
+
+    public function withTrashedById($id);
+
+    public function restoreById($id);
+
+    public function restoreByIds($ids);
+
+    public function restoreAll($id);
+
+    public function forceDeleteById($id);
+
+    public function forceDeleteByIds($ids);
+
+    public function forceDeleteAll($id);
+
 }

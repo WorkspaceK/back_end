@@ -25,7 +25,7 @@ class DegreeRepository
         {
             $data = $data->whereRaw('LOWER(last_name) like ?', ['%' . strtolower($request['last_name']) . '%']);
         }
-        $paginate = $data->orderBy($request['field'], $request['order'])->paginate($request['size']);
+        $paginate = $data->orderBy($request['field'], $request['order'])->withCount('persons')->paginate($request['size']);
         return [
             'page_info' => [
                 'total_items' => $paginate->total(),
@@ -97,5 +97,65 @@ class DegreeRepository
     public function import($data)
     {
         return $this->degreeModel->get();
+    }
+
+    //recycle
+    public function onlyTrashed($request)
+    {
+        $data = $this->degreeModel->onlyTrashed();
+        if (!empty($request['last_name']))
+        {
+            $data = $data->whereRaw('LOWER(last_name) like ?', ['%' . strtolower($request['last_name']) . '%']);
+        }
+        $paginate = $data->orderBy($request['field'], $request['order'])->withCount('persons')->paginate($request['size']);
+        return [
+            'page_info' => [
+                'total_items' => $paginate->total(),
+                'total_pages' => $paginate->lastPage(),
+                'current' => $paginate->currentPage(),
+                'size' => $paginate->perPage(),
+            ],
+            'records' => $paginate->items(),
+        ];
+    }
+
+    public function onlyTrashedById($id)
+    {
+        return $this->degreeModel->onlyTrashed()->where('id', $id)->first();
+    }
+
+    public function withTrashedById($id)
+    {
+        return $this->degreeModel->withTrashed()->where('id', $id)->first();
+    }
+
+    public function restoreAll()
+    {
+        return $this->degreeModel->onlyTrashed()->restore();
+    }
+
+    public function restoreByIds($ids)
+    {
+        return $this->degreeModel->onlyTrashed()->whereIn('id', $ids)->restore($ids);
+    }
+
+    public function restoreById($id)
+    {
+        return $this->degreeModel->where('id', $id)->restore($id);
+    }
+
+    public function forceDeleteById($id)
+    {
+        return $this->degreeModel->onlyTrashed()->where('id', $id)->forceDelete($id);
+    }
+
+    public function forceDeleteByIds($ids)
+    {
+        return $this->degreeModel->onlyTrashed()->whereIn('id', $ids)->forceDelete($ids);
+    }
+
+    public function forceDeleteAll()
+    {
+        return $this->degreeModel->onlyTrashed()->forceDelete();
     }
 }

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('phone_number', 20)->nullable();
             $table->string('avatar', 500)->nullable();
 
-            $table->unsignedBigInteger('degree_id')->unique();
+            $table->unsignedBigInteger('degree_id')->nullable();
             $table->unsignedBigInteger('academic_rank_id')->nullable();
 
             $table->foreign('degree_id')->references('id')->on('degrees');

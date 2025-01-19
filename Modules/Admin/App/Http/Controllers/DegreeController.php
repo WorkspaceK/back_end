@@ -205,83 +205,83 @@ class DegreeController extends Controller
 
 //
 //    //recycle
-//    public function recycle(DegreeRequest $request)
-//    {
-//        try {
-//            if (!$data = $this->degreeService->onlyTrashed($request->all())) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
-//
-//    public function showRecycled($id)
-//    {
-//        try {
-//            if (!$data = $this->degreeService->onlyTrashedById($id)) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
-//
-//    public function restore($id)
-//    {
-//        try {
-//            if (!$data = $this->degreeService->restoreById($id)) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
-//
-//    public function restoreMultiple($ids)
-//    {
-//        try {
-//            if (!$data = $this->degreeService->restoreByIds($ids)) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
-//
-//    public function restoreAll()
-//    {
-//        try {
-//            if (!$data = $this->degreeService->restoreAll()) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
-//
-//    public function forceDelete($id)
-//    {
-//        try {
-//            if (!$data = $this->degreeService->forceDeleteById($id)) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
-//
-//    public function forceDeleteMultiple($ids)
-//    {
-//        try {
-//            if (!$data = $this->degreeService->forceDeleteByIds($ids)) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
-//
-//    public function forceDeleteAll()
-//    {
-//        try {
-//            if (!$data = $this->degreeService->forceDeleteAll()) return response()->json("Bad request!", 404);
-//            return response()->json($data);
-//        } catch (\Exception $e) {
-//            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
-//        }
-//    }
+    public function recycle(Request $request)
+    {
+        try {
+            if (!$data = $this->degreeService->onlyTrashed($request->all())) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function showRecycled($id)
+    {
+        try {
+            if (!$data = $this->degreeService->onlyTrashedById($id)) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            if (!$data = $this->degreeService->restoreById($id)) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function restoreMultiple($ids)
+    {
+        try {
+            if (!$data = $this->degreeService->restoreByIds($ids)) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function restoreAll()
+    {
+        try {
+            if (!$data = $this->degreeService->restoreAll()) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            if (!$data = $this->degreeService->forceDeleteById($id)) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function forceDeleteMultiple($ids)
+    {
+        try {
+            if (!$data = $this->degreeService->forceDeleteByIds($ids)) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function forceDeleteAll()
+    {
+        try {
+            if (!$data = $this->degreeService->forceDeleteAll()) return response()->json("Bad request!", 404);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
 }
