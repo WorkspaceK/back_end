@@ -1,0 +1,63 @@
+FROM php:8.2-fpm-alpine
+
+# Cài đặt các thư viện và tiện ích cần thiết
+RUN apk --no-cache add \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    shadow \
+    libzip-dev \
+    gettext \
+    gettext-dev \
+    icu-dev \
+    oniguruma-dev \
+    npm \
+    nodejs \
+    git \
+    bash \
+    postgresql-dev \
+    curl \
+    zip unzip
+
+# Cấu hình và cài đặt các extension PHP cần cho Laravel và PostgreSQL
+RUN docker-php-ext-configure gd --enable-gd \
+    --with-freetype=/usr/include/ \
+    --with-jpeg=/usr/include/ && \
+    docker-php-ext-install -j$(nproc) pdo_pgsql mbstring zip gettext intl exif gd opcache
+
+# Cấu hình user (có thể thay PUID, PGID khi build)
+ARG PUID=1000
+ARG PGID=1000
+RUN addgroup -g ${PGID} laravel && \
+    adduser -D -u ${PUID} -G laravel laravel && \
+    passwd -u laravel && \
+    usermod -s /bin/sh laravel
+
+# Copy cấu hình PHP tùy chỉnh upload.ini
+COPY upload.ini /usr/local/etc/php/conf.d/
+
+# Cài Composer toàn cục
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Cài Laravel Installer và PHPUnit global và tạo liên kết lệnh dễ gọi
+RUN composer global require laravel/installer phpunit/phpunit && \
+    ln -s /root/.composer/vendor/bin/* /usr/local/bin/
+
+ENV PATH="${PATH}:/root/.composer/vendor/bin"
+
+WORKDIR /var/www/laravel
+
+# Copy toàn bộ mã nguồn vào container
+COPY . .
+
+# Cài các package PHP với composer
+RUN composer install --optimize-autoloader --no-interaction --no-scripts --prefer-dist
+
+# Set quyền cho thư mục lưu trữ và cache để Laravel hoạt động bình thường
+RUN chown -R laravel:laravel storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
+
+EXPOSE 8080
+
+# Khởi động server Laravel trên cổng 8080 trong container
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
